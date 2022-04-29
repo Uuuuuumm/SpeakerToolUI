@@ -1,0 +1,229 @@
+<html>
+
+    <head>
+        <title>Cube</title>
+        
+        <style>
+
+            body{
+                margin: 0;
+            }
+
+
+            button {
+                background-color: #f4511e;
+                color: #FFFFFF;
+                text-align: center;
+                cursor: pointer;
+                border-radius: 4px;
+                position: relative
+            }
+
+            button:hover {
+                background-color: #f18e70;
+            }
+
+
+            .frame{
+                outline:solid blue 2px;
+                position: absolute;
+            }
+
+            .camChange{
+                float:left;
+            }
+
+
+            #leftSideMenu
+            {
+                height:75%;
+                width: 15%;
+                visibility: hidden;
+            }
+
+            #main
+            {
+                height:75%;
+                width: 80%; 
+                top:  0%;
+            }
+
+
+            #rackView
+            {
+                left: 80%;
+                height:75%;
+                width: 20%
+            }
+
+            #rackMenu
+            {
+                left: 80%;
+                top: 75%;
+                height: 25%; 
+                width: 20%
+            }
+
+            #orthoStadium
+            {
+                width: 65%;
+                height: 25%;
+                top:75%;
+                left: 15%;
+            }
+
+            #orthoMenu
+            {
+                height: 25%;
+                top:75%;
+                width: 15%;
+            }
+
+            #openSideMenu
+            {
+                font-size:large;
+                position: absolute;
+             7   top: 50%;
+            }
+
+            
+        
+        </style>
+    </head>
+
+    <body id = "body">
+        
+        <div class = "frame" id = "leftSideMenu"></div>
+
+        <div class = "frame" id = "main">
+            <div id = "camChangeButtons" style = "right: 10; top:10; position:absolute">
+                <button class = "camChange">3D Perspective</button>
+                <button class = "camChange">Orthographic Overview</button>
+            </div>
+                   
+            <button id="openSideMenu">&raquo</button>
+        </div>
+
+        <div class = "frame" id = "rackView"></div>
+        <div class = "frame" id = "rackMenu">
+            <p>Insert useful menu here</p>
+        </div>
+        <div class = "frame" id = "orthoStadium"></div>
+        <div class = "frame" id = "orthoMenu"></div>
+
+
+        <script src = "three.js"></script>
+        <script src='threex.domevents.js'></script>
+        <script src = "orbitcontrols.js"></script>
+        <script src="ConvexGeometry.js"></script>
+
+        <script>
+            //class variables
+            var scene;
+
+            var main;
+            var orthoStadium;
+
+            var views;
+            
+
+
+            //set up initial scene 
+            function init(){
+                
+                //create scene and add grid+axes so we have something to look at
+                scene = new THREE.Scene();
+                var axesHelper = new THREE.AxesHelper( 100 );
+                var gridHelper = new THREE.GridHelper( 200, 200 );
+                scene.add(axesHelper);
+                scene.add(gridHelper);
+                
+                setUpFrame_main();
+                setUpFrame_orthoStadium();
+
+                //main is only view set up but this is where all the camera views will go
+                views = [
+                    main,
+                    orthoStadium
+                ]
+
+                var cube = new THREE.Mesh(new THREE.CubeGeometry(20, 20, 20), new THREE.MeshBasicMaterial({color: "#FFFF00"}));
+                cube.add(new THREE.LineSegments( new THREE.EdgesGeometry(new THREE.CubeGeometry(20,20,20)), new THREE.LineBasicMaterial( { color: "#000000" } ) ));
+                scene.add(cube);
+
+                for (var i in scene.children){
+                    console.log(scene.children[i]);
+                }
+            }
+
+            
+
+            //create camera/renderer with specs of main div 
+            //to set up a new view in a new div just repeat this process but replace "main" and main with the name id of the new div -- add new view to views[] -- call setup method in init()
+            function setUpFrame_main(){
+                main = {}
+                main.width = document.getElementById("main").clientWidth,
+                main.height = document.getElementById("main").clientHeight,
+                main.aspectRatio = main.width/main.height;
+                main.camera = new THREE.PerspectiveCamera(75, main['aspectRatio'], 0.1, 1000);
+                main.renderer = new THREE.WebGLRenderer();
+                main.controls = new THREE.OrbitControls( main.camera, document.getElementById('main'));
+
+                main.camera.position.set(100, 100, 100);
+                main.controls.target.set(0, 0, 0);
+                main.renderer.setSize(main.width, main.height);
+
+                document.getElementById("main").appendChild( main.renderer.domElement); //add renderer to main div
+            }
+
+            function setUpFrame_orthoStadium(){
+                orthoStadium = {}
+                orthoStadium.width = document.getElementById("orthoStadium").clientWidth,
+                orthoStadium.height = document.getElementById("orthoStadium").clientHeight,
+                orthoStadium.aspectRatio = orthoStadium.width/orthoStadium.height;
+                orthoStadium.camera = new THREE.OrthographicCamera(-( orthoStadium.aspectRatio * 100)/2, ( orthoStadium.aspectRatio *100)/2, 50, -50, 0, 200),
+                orthoStadium.renderer = new THREE.WebGLRenderer();
+
+                orthoStadium.controls = new THREE.OrbitControls( orthoStadium.camera, document.getElementById('orthoStadium'));
+                orthoStadium.controls.enabled = false;
+                orthoStadium.camera.position.set(50,00,00);
+                orthoStadium.camera.lookAt(0,0,0);
+                orthoStadium.renderer.setSize(orthoStadium.width, orthoStadium.height);
+
+                document.getElementById("orthoStadium").appendChild( orthoStadium.renderer.domElement);
+            }
+
+
+          
+            //use bools with a bunch of if statements to build 
+            function addGeometry(coords){}
+
+            function update(){}
+
+            function render()
+            {
+                for(var e in views){
+                    var view = views[e];
+                    view.camera.updateProjectionMatrix();
+                    view.renderer.render(scene, view.camera);
+                    view.controls.update();
+                }
+            };
+
+            var Animate = function()
+            {
+                requestAnimationFrame(Animate);
+                
+                update();
+                render(); 
+            };
+
+            init();
+            Animate();
+
+        
+        </script>
+
+    </body>
+
+</html>

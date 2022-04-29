@@ -1,0 +1,117 @@
+<html>
+    <head>
+        <title>Blurr</title>
+        <link rel="stylesheet" href="main.css">
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+        <link rel="shortcut icon" type="image/x-icon" href="speakerIcon.png" />
+        
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js">
+        </script>
+        <script src = "three.js"></script>
+        <script src='threex.domevents.js'></script>
+        <script src = "orbitcontrols.js"></script>
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <script src="menu.js"></script>
+        <script src="ConvexGeometry.js"></script>
+        <script src="QuickHull.js"></script>
+    </head>
+
+    <body id="body" onresize="resizeScene()">
+        
+        <div id="toolBar">
+            <h2>Blurr&ensp;&ensp;</h2>
+            <marquee>clearly better than focus</marquee>
+            <div title="toggle settings(s)" id="settingsButton" class="toolButton" onmousedown="toggleSettings()">
+                <img src="settings.png">
+            </div>
+            <div title="reset camera" id="cameraZero" class="toolButton" onmousedown="zeroCamera()">
+                <img src="camera.png">
+            </div>
+<!--            import venue-->
+            <input type="file" id="file" accept=".json">
+            <label for="file" onmousedown="removeVenue()">Import Venue</label>
+            <button id="newArrBtn" onmousedown="addNewArray()" onclick="this.blur()">Import Array</button>
+            
+        </div>
+        <div id="settingsDiv">
+<!-- angle sensitivity-->
+            <div title="adjust dragging sensitivity for angling each cabinet" class="settingContainer">
+                <input type="range" min="1" max="100" value="0" class="slider" id="angleSensSlider" oninput="updateSliders()">
+                <p id="ASSlabel" class="settingsLabel"></p>
+            </div>
+<!-- gridsize-->
+            <div title="set side length of square grid" class="settingContainer">
+                <input type="number" value="0" id="gridSizeField" class="settingField" onchange="updateSliders()">
+                <p id="GSFlabel" class="settingsLabel"></p>
+            </div>
+<!-- frame rate-->
+            <div title="set maximum framerate" class="settingContainer">
+                <input type="number" value="0" id="frameRateField" class="settingField" onchange="updateSliders()">
+                <p id="MFRlabel" class="settingsLabel"></p>
+            </div>
+<!-- rough pinning-->
+            <div title="adjust angles of all cabinets by dragging bottom cabinet in an array" class="settingContainer">
+                <input type="text" id="roughPinBox" class="settingField" onmousedown="artificialCheck(this, 0)" readonly="readonly">
+                <p id="RPlabel" class="settingsLabel"></p>
+            </div>
+<!-- relative dial rotation-->
+            <div title="y-rotation dial rotates relative to the camera rotation" class="settingContainer">
+                <input type="text" id="relativeDialBox" class="settingField" onmousedown="artificialCheck(this, 1)" readonly="readonly">
+                <p id="RDlabel" class="settingsLabel"></p>
+            </div>
+            
+        </div>
+
+<!-- container for venue name + button -->
+        <div id="venueContDiv">
+            <div id="venueName"></div>
+            <div title="enable movement of the venue" id="stageMoveBttn" onmousedown="toggleStageMove()"><img src="moveIcon.png"></div>
+        </div>
+        
+<!-- body + bg image-->
+        <div id="bgImg">
+            <img src="bmw.JPG">
+        </div>
+        <div id="graph"></div>
+        
+
+        <div id="popRot" class="popNum"></div>
+        <div id="popY" class="popNum"></div>
+        <div id="popLen" class="popNum"></div>
+        <div id="popXZ" class="popNum"></div>
+        
+    
+<!-- trackers -->
+        <div id="topL" class="arrTracker"><div class=trackerBox></div></div>
+        <div id="topR" class="arrTracker"><div class=trackerBox></div></div>
+        <div id="botL" class="arrTracker"><div class=trackerBox></div></div>
+        <div id="botR" class="arrTracker"><div class=trackerBox></div></div>
+        
+        <div id="rotDiv">
+            <center>
+                <div id="rotGrab"><img src="rotArrow.png"></div>
+            </center>
+            <div id=rotRay></div>
+            <div id="rotSpeaker"></div>
+        </div>
+        <div id="sideView">
+            <span id="sideViewLabel">Cohesion 12</span>
+        </div>
+        
+        
+<!-- number pop up listener div -->
+        <div id="numIdent">5</div>
+        
+<!-- script imports -->
+        <script src="htmlElements.js"></script>
+        <script src="main.js"></script>
+        <script src="venueImport.js"></script>
+        <script src="textSprite.js"></script>
+        <script src="speakerArray.js"></script>
+        
+        
+        
+        <div id="pVis" style="   display:none;    background-color:red; width:10; height:10; position:absolute; z-index: 101;
+             left:0; top:0; border-radius:10px; border-top-left-radius: 0;"></div>
+    </body>
+</html>
